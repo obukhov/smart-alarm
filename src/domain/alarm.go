@@ -1,14 +1,13 @@
 package domain
 
-import "time"
-
-type State interface {
-	TimeToAlarm() time.Duration
-}
+import (
+	"gopkg.in/yaml.v2"
+)
 
 type ActionInterface interface {
-	CheckAndRun(timeToAlarm time.Duration) State
-	Init()
+	yaml.Marshaler
+	yaml.Unmarshaler
+	ActionType() string
 }
 
 type Alarm struct {
