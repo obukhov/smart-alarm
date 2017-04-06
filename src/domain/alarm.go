@@ -1,13 +1,7 @@
 package domain
 
-import (
-	"gopkg.in/yaml.v2"
-)
+type ActionHolder struct {
 
-type ActionInterface interface {
-	yaml.Marshaler
-	yaml.Unmarshaler
-	ActionType() string
 }
 
 type Alarm struct {
