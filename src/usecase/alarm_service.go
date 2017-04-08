@@ -5,6 +5,7 @@ import (
 	"github.com/obukhov/smart-alarm/src/interfaces"
 	"time"
 	"log"
+	"errors"
 )
 
 type AlarmService struct {
@@ -18,6 +19,7 @@ type AlarmService struct {
 func NewAlarmService(storage interfaces.AlarmStorage) *AlarmService {
 	return &AlarmService{
 		storage: storage,
+		runners: make(map[string]interfaces.AlarmActionRunner),
 	}
 }
 
@@ -25,27 +27,48 @@ func (t *AlarmService) SetAlarm(alarm *domain.Alarm) {
 	t.storage.Persist(alarm)
 	t.alarm = alarm
 
-	t.command <- alarmServiceRefreshAlarm
+	if nil != t.command {
+		t.command <- alarmServiceRefreshAlarm
+	}
 }
 
 func (t *AlarmService) ResetAlarm() {
-	t.ticker.Stop()
-	t.command <- alarmServiceStop
+	t.alarm = nil
+}
+
+func (t *AlarmService) LoadAlarm() {
+	t.SetAlarm(t.storage.Load())
 }
 
 func (t *AlarmService) Start() {
-	t.alarm = t.storage.Load()
-	log.Println(*t.alarm)
-
 	t.ticker = time.NewTicker(time.Second)
 	t.command = make(chan AlarmServiceCommand)
 
-	go t.trackAlarm()
+	for _, action := range t.alarm.Actions {
+		runner, ok := t.runners[action.ActionType()]
+		if false == ok {
+			panic(errors.New("Unknown action type " + action.ActionType()))
+		}
 
+		runner.Init(action)
+	}
+
+	go t.trackAlarm()
+}
+
+func (t *AlarmService) Stop() {
+	t.ticker.Stop()
+	t.ticker = nil
+	close(t.command)
+	t.command <- alarmServiceStop
+}
+
+func (t *AlarmService) AddRunner(alarmType string, runner interfaces.AlarmActionRunner) {
+	t.runners[alarmType] = runner
 }
 
 func (t *AlarmService) trackAlarm() {
-	alarm := *t.alarm
+	alarm := *t.alarm //todo handle, when alarm is reset
 	stop := false
 
 	for stop == false {

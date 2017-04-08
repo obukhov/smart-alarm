@@ -4,12 +4,8 @@ import (
 	"log"
 	"github.com/obukhov/smart-alarm/src/infrastruture"
 	"github.com/obukhov/smart-alarm/src/usecase"
+	"github.com/obukhov/smart-alarm/src/domain"
 )
-
-// build persister
-// build service
-// run
-// block
 
 func main() {
 	log.Println("Starting server")
@@ -17,5 +13,10 @@ func main() {
 	storage := infrastruture.NewFileAlarmStorage()
 	service := usecase.NewAlarmService(storage)
 
+	service.AddRunner(domain.AlarmActionDimLight, infrastruture.NewDimLightRunner())
+
+	service.LoadAlarm()
 	service.Start()
+
+	<-make(chan bool) // todo handle system signals for graceful stop
 }

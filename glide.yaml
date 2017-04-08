@@ -1,0 +1,3 @@
+package: github.com/obukhov/smart-alarm
+import:
+- package: github.com/dustin/go-humanize
