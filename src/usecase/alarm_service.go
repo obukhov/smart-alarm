@@ -17,7 +17,14 @@ type AlarmService struct {
 }
 
 func NewAlarmService(storage interfaces.AlarmStorage) *AlarmService {
+	actionList := make([]domain.ActionInterface, 0)
+	blank, err := domain.NewAlarm(12, 0, false, actionList)
+	if nil != err {
+		panic(err)
+	}
+
 	return &AlarmService{
+		alarm:   blank,
 		storage: storage,
 		runners: make(map[string]interfaces.AlarmActionRunner),
 	}
@@ -32,8 +39,17 @@ func (t *AlarmService) SetAlarm(alarm *domain.Alarm) {
 	}
 }
 
+func (t *AlarmService) GetAlarm() *domain.Alarm {
+	return t.alarm
+}
+
 func (t *AlarmService) ResetAlarm() {
-	t.alarm = nil
+	t.alarm.Enabled = false
+	t.storage.Persist(t.alarm)
+	if nil != t.command {
+		t.command <- alarmServiceRefreshAlarm
+	}
+
 }
 
 func (t *AlarmService) LoadAlarm() {

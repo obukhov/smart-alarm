@@ -51,12 +51,13 @@ func (dlr *DimLightRunner) CheckAndRun(timeToAlarm time.Duration, action domain.
 		panic(errors.New("Wrong action passed to DimLightRunner"))
 	}
 
-	timeToAlarmFormatter := humanize.RelTime(time.Now(), time.Now().Add(timeToAlarm), "earlier", "later")
-	log.Printf("Check and run for %s", timeToAlarmFormatter)
-
 	if timeToAlarm > dimLightAction.RumpUpDuration() {
 		return
 	}
+
+	timeToAlarmFormatter := humanize.RelTime(time.Now(), time.Now().Add(timeToAlarm), "earlier", "later")
+	log.Printf("Check and run for %s", timeToAlarmFormatter)
+
 
 	if dlr.CurrentState.isOn == false {
 		dlr.send(dlr.Config.turnOn)

@@ -40,14 +40,16 @@ func (as *fileAlarmStorage) Persist(alarm *domain.Alarm) {
 }
 
 func (as *fileAlarmStorage) Load() *domain.Alarm {
-	alarm, typedErr := domain.NewAlarm(0, 0, make([]domain.ActionInterface, 0))
+	alarm, typedErr := domain.NewAlarm(8, 20, false, make([]domain.ActionInterface, 0))
 	if nil != typedErr {
 		panic(typedErr)
 	}
 
 	data, err := ioutil.ReadFile(as.filePath)
 	if nil != err {
-		panic(err)
+		as.Persist(alarm)
+		log.Println("Init empty alarm file")
+		return alarm
 	}
 
 	alarmRaw := make(UntypedHash)

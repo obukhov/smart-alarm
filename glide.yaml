@@ -1,3 +1,5 @@
 package: github.com/obukhov/smart-alarm
 import:
 - package: github.com/dustin/go-humanize
+- package: github.com/ant0ine/go-json-rest
+  version: ^3.3.2

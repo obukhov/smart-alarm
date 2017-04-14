@@ -5,6 +5,7 @@ import (
 	"github.com/obukhov/smart-alarm/src/infrastruture"
 	"github.com/obukhov/smart-alarm/src/usecase"
 	"github.com/obukhov/smart-alarm/src/domain"
+	"net/http"
 )
 
 func main() {
@@ -14,9 +15,10 @@ func main() {
 	service := usecase.NewAlarmService(storage)
 
 	service.AddRunner(domain.AlarmActionDimLight, infrastruture.NewDimLightRunner())
-
 	service.LoadAlarm()
 	service.Start()
 
-	<-make(chan bool) // todo handle system signals for graceful stop
+
+	apiServer := infrastruture.NewApiServer(service)
+	log.Fatal(http.ListenAndServe(":8090", apiServer.MakeHandler()))
 }

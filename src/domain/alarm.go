@@ -1,14 +1,15 @@
 package domain
 
 type Alarm struct {
+	Enabled bool
 	Hours   uint8 // todo make fields not published and provide serialization
 	Minutes uint8
 
 	Actions []ActionInterface
 }
 
-func NewAlarm(hours, minutes uint8, actions []ActionInterface) (*Alarm, typedError) {
-	alarm := &Alarm{}
+func NewAlarm(hours, minutes uint8, enabled bool, actions []ActionInterface) (*Alarm, typedError) {
+	alarm := &Alarm{Enabled:enabled}
 	if err := alarm.SetHours(hours); nil != err {
 		return nil, err
 	}

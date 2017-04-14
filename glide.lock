@@ -1,6 +1,8 @@
-hash: 1eaf4ab39ec9e86c822a5c7219411e2a2871b3ed247e3766452764642b669207
-updated: 2017-04-08T21:50:38.986163254+02:00
+hash: fca096352fc7bd366b11d78ba1d80b32fff898fe664211a9ac7d4ab0bdc0c326
+updated: 2017-04-14T22:51:57.594556896+02:00
 imports:
+- name: github.com/ant0ine/go-json-rest
+  version: ce4b71cdf7ba29ef443d704bd923f5bbf281ee30
 - name: github.com/dustin/go-humanize
   version: 259d2a102b871d17f30e3cd9881a642961a1e486
 testImports: []
